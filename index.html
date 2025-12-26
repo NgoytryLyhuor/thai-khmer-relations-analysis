@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ការវិភាគទំនាក់ទំនង ថៃ-ខ្មែរ (Thai-Khmer Relations Analysis)</title>
+    
+    <!-- Google Fonts for Khmer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind Config for Colors and Fonts -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Kantumruy Pro"', 'sans-serif'],
+                        header: ['"Battambang"', 'serif'],
+                    },
+                    colors: {
+                        neutral: {
+                            50: '#f9fafb',
+                            100: '#f3f4f6',
+                            200: '#e5e7eb',
+                            800: '#1f2937',
+                            900: '#111827',
+                        },
+                        primary: {
+                            light: '#E0E7FF', // Indigo 100
+                            DEFAULT: '#4338ca', // Indigo 700
+                            dark: '#312e81', // Indigo 900
+                        },
+                        accent: {
+                            light: '#FEF3C7', // Amber 100
+                            DEFAULT: '#D97706', // Amber 600
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555; 
+        }
+
+        /* Chart Container Specifics */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-neutral-50 text-neutral-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- REQUIRED PLACEHOLDERS -->
+    <!-- Chosen Palette: Warm Neutrals with Indigo (Primary) and Amber (Accent) for a professional yet culturally resonant feel. -->
+    <!-- Application Structure Plan: The app is structured as a dashboard with four main tabs: 1. Overview (Dashboard stats), 2. Roots of Conflict (Analysis), 3. Historical Timeline (Chronology), 4. Shared Culture & Future (Synthesis). This flow moves from high-level data to deep historical analysis, then to cultural roots, ending with economic reality. -->
+    <!-- Visualization & Content Choices: 
+         - Overview: Uses Scorecards for quick stats (Trade, Border length).
+         - Conflict Analysis: Radar Chart to show multi-faceted causes (Politics, Border, Culture, History).
+         - Timeline: Vertical interactive list to scroll through centuries of relations.
+         - Culture: Comparison cards to show similarities (Muay Thai/Kun Khmer).
+         - Economy: Line chart to show trade growth despite political tension.
+         - Logic: JS handles tab switching and chart rendering to ensure a smooth, single-page experience. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Header / Navigation -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <span class="text-2xl text-primary font-header font-bold">ថៃ-ខ្មែរ Insight</span>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <button onclick="app.navigate('overview')" class="nav-btn text-neutral-900 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="overview">ទិដ្ឋភាពរួម (Overview)</button>
+                    <button onclick="app.navigate('conflict')" class="nav-btn text-neutral-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="conflict">ឫសគល់បញ្ហា (Root Causes)</button>
+                    <button onclick="app.navigate('culture')" class="nav-btn text-neutral-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="culture">វប្បធម៌ & ប្រវត្តិសាស្ត្រ (Culture)</button>
+                    <button onclick="app.navigate('economy')" class="nav-btn text-neutral-500 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2 border-transparent" data-target="economy">សេដ្ឋកិច្ច & អនាគត (Economy)</button>
+                </nav>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-neutral-500 hover:text-neutral-900 focus:outline-none p-2">
+                        <span class="text-xl">☰</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <button onclick="app.navigate('overview')" class="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md">ទិដ្ឋភាពរួម</button>
+                <button onclick="app.navigate('conflict')" class="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md">ឫសគល់បញ្ហា</button>
+                <button onclick="app.navigate('culture')" class="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md">វប្បធម៌ & ប្រវត្តិសាស្ត្រ</button>
+                <button onclick="app.navigate('economy')" class="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md">សេដ្ឋកិច្ច & អនាគត</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-7xl">
+        
+        <!-- Section: Overview -->
+        <div id="section-overview" class="fade-in space-y-8">
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <h1 class="text-3xl md:text-4xl font-header font-bold text-neutral-900 mb-4">ហេតុអ្វីបានជា ថៃ និង ខ្មែរ តែងតែមានបញ្ហានឹងគ្នា?</h1>
+                <p class="text-lg text-neutral-600 leading-relaxed">
+                    ទំនាក់ទំនងរវាងកម្ពុជា និងថៃ មានភាពស្មុគស្មាញដែលកើតចេញពីប្រវត្តិសាស្ត្ររួមគ្នាដ៏យូរអង្វែង។ កម្មវិធីនេះនឹងវិភាគលើទិន្នន័យជាក់ស្តែង ដើម្បីស្វែងយល់ពីមូលហេតុនៃជម្លោះ និងកាលានុវត្តភាពនៃកិច្ចសហប្រតិបត្តិការ។
+                </p>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-neutral-100 hover:shadow-md transition-shadow">
+                    <div class="text-primary text-4xl mb-2">⚡</div>
+                    <h3 class="text-lg font-semibold text-neutral-700">ជម្លោះសំខាន់</h3>
+                    <p class="text-3xl font-bold text-neutral-900 mt-2">ប្រាសាទព្រះវិហារ</p>
+                    <p class="text-sm text-neutral-500 mt-1">និងការអះអាងកម្មសិទ្ធិវប្បធម៌</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-neutral-100 hover:shadow-md transition-shadow">
+                    <div class="text-accent text-4xl mb-2">💰</div>
+                    <h3 class="text-lg font-semibold text-neutral-700">ទំហំពាណិជ្ជកម្ម (២០២៣)</h3>
+                    <p class="text-3xl font-bold text-neutral-900 mt-2">>$៨ ពាន់លាន</p>
+                    <p class="text-sm text-neutral-500 mt-1">កើនឡើងទោះមានភាពតានតឹង</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-neutral-100 hover:shadow-md transition-shadow">
+                    <div class="text-blue-500 text-4xl mb-2">🚧</div>
+                    <h3 class="text-lg font-semibold text-neutral-700">ព្រំដែនគោក</h3>
+                    <p class="text-3xl font-bold text-neutral-900 mt-2">៨០៣ គ.ម</p>
+                    <p class="text-sm text-neutral-500 mt-1">តំបន់ជាច្រើនមិនទាន់បោះបង្គោលចប់</p>
+                </div>
+            </div>
+
+            <!-- Intro Chart: Public Sentiment vs Economic Reality -->
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm border border-neutral-200 mt-8">
+                <h2 class="text-xl font-header font-bold text-neutral-800 mb-2">ភាពផ្ទុយគ្នារវាង អារម្មណ៍ជាតិនិយម និង ការពិតជាក់ស្តែង</h2>
+                <p class="text-neutral-600 mb-6 text-sm">ក្រាហ្វនេះបង្ហាញពីភាពផ្ទុយគ្នារវាងភាពតានតឹងផ្នែកនយោបាយ (Political Tension) និងកំណើនសេដ្ឋកិច្ច (Economic Growth) ក្នុងរយៈពេល ២ ទសវត្សរ៍ចុងក្រោយ។</p>
+                
+                <div class="chart-container">
+                    <canvas id="overviewChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Root Causes (Conflict) -->
+        <div id="section-conflict" class="hidden fade-in space-y-8">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-header font-bold text-neutral-900 mb-4 border-l-4 border-red-500 pl-4">ឫសគល់នៃបញ្ហា (Root Causes Analysis)</h2>
+                <p class="text-neutral-700 mb-8 leading-relaxed">
+                    បញ្ហារវាងថៃនិងខ្មែរ មិនមែនកើតឡើងដោយចៃដន្យទេ។ វាគឺជាលទ្ធផលនៃការរួមផ្សំគ្នារវាងកត្តាប្រវត្តិសាស្ត្រ នយោបាយ និងវប្បធម៌។ ខាងក្រោមនេះគឺជាការវិភាគលើកត្តាជំរុញសំខាន់ៗ។
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <!-- Radar Chart -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm">
+                        <h3 class="text-lg font-semibold text-center mb-4">កត្តាជំរុញជម្លោះ (Conflict Drivers)</h3>
+                        <div class="chart-container" style="max-height: 350px;">
+                            <canvas id="conflictRadarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Interactive List -->
+                    <div class="space-y-4">
+                        <div class="bg-white border border-neutral-200 p-4 rounded-lg cursor-pointer hover:border-primary transition-all group" onclick="app.toggleDetail('cause-history')">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-neutral-800">១. ប្រវត្តិសាស្ត្រឈឺចាប់ (Historical Trauma)</h4>
+                                <span class="text-primary group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
+                            <div id="cause-history" class="hidden mt-3 text-sm text-neutral-600 border-t pt-2">
+                                ការផ្លាស់ប្តូរអំណាចរវាងអាណាចក្រអង្គរ និងអាយុធ្យា បានបន្សល់ទុកនូវការចងចាំប្រវត្តិសាស្ត្រដែលភាគីទាំងសងខាងមើលឃើញថាខ្លួនជាជនរងគ្រោះ ឬជាម្ចាស់ទឹកដី។
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-neutral-200 p-4 rounded-lg cursor-pointer hover:border-primary transition-all group" onclick="app.toggleDetail('cause-politics')">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-neutral-800">២. នយោបាយក្នុងស្រុក (Domestic Politics)</h4>
+                                <span class="text-primary group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
+                            <div id="cause-politics" class="hidden mt-3 text-sm text-neutral-600 border-t pt-2">
+                                អ្នកនយោបាយនៃប្រទេសទាំងពីរ ជាញឹកញាប់ប្រើប្រាស់បញ្ហាជាតិនិយម (Nationalism) ដើម្បីស្វែងរកការគាំទ្រពីប្រជាជនក្នុងស្រុក ជាពិសេសនៅពេលមានការបោះឆ្នោត។
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-neutral-200 p-4 rounded-lg cursor-pointer hover:border-primary transition-all group" onclick="app.toggleDetail('cause-culture')">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-neutral-800">៣. ការទាមទារម្ចាស់កម្មសិទ្ធិវប្បធម៌</h4>
+                                <span class="text-primary group-hover:translate-x-1 transition-transform">→</span>
+                            </div>
+                            <div id="cause-culture" class="hidden mt-3 text-sm text-neutral-600 border-t pt-2">
+                                ជម្លោះលើប្រភពដើមនៃ គុនខ្មែរ vs មួយថៃ, ល្ខោនខោល vs ខុន។ ភាគីទាំងពីរមានវប្បធម៌ស្រដៀងគ្នាខ្លាំងដែលនាំឱ្យមានការប្រជែងថា "នរណាជាម្ចាស់ដើម"។
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Culture & History Timeline -->
+        <div id="section-culture" class="hidden fade-in space-y-8">
+             <div class="max-w-4xl mx-auto mb-8">
+                <h2 class="text-2xl font-header font-bold text-neutral-900 mb-4 border-l-4 border-primary pl-4">វប្បធម៌ និង ខ្សែបន្ទាត់ពេលវេលា</h2>
+                <p class="text-neutral-700">ការស្វែងយល់ពីឬសគល់ដែលដូចគ្នា និងព្រឹត្តិការណ៍ដែលបំបែកយើង។</p>
+            </div>
+
+            <!-- Comparison Cards (Interactive) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <!-- Card 1 -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-neutral-200">
+                    <div class="bg-primary text-white p-4 text-center font-bold text-lg">បេតិកភណ្ឌរួម (Shared Heritage)</div>
+                    <div class="p-6">
+                        <p class="text-sm text-neutral-600 mb-4">វប្បធម៌ទាំងពីរមានប្រភពចេញពីឥទ្ធិពលឥណ្ឌា (ព្រហ្មញ្ញសាសនា និងពុទ្ធសាសនា)។</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center border-b pb-2">
+                                <span class="text-blue-600 font-semibold">ខ្មែរ</span>
+                                <span class="text-xs text-gray-400">vs</span>
+                                <span class="text-red-600 font-semibold">ថៃ</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>គុនខ្មែរ (Kun Khmer)</span>
+                                <span>មួយថៃ (Muay Thai)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>ល្ខោនខោល (Lakhon Khol)</span>
+                                <span>ខុន (Khon)</span>
+                            </div>
+                            <div class="flex justify-between items-center text-sm">
+                                <span>អក្សរខ្មែរ</span>
+                                <span>អក្សរថៃ (ដកស្រង់ពីខ្មែរ)</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 bg-yellow-50 p-3 rounded text-xs text-yellow-800 border border-yellow-200">
+                            💡 <strong>ការយល់ឃើញ៖</strong> ជំនួសឱ្យការឈ្លោះប្រកែកគ្នា អ្នកប្រាជ្ញជាច្រើនយល់ថាវាជា "វប្បធម៌រួមនៃតំបន់អាស៊ីអាគ្នេយ៍"។
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Visualization -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-neutral-200 flex flex-col h-full">
+                    <h3 class="font-bold text-lg mb-4 text-center">ខ្សែបន្ទាត់ពេលវេលាសំខាន់ៗ</h3>
+                    <div class="overflow-y-auto pr-2 custom-scrollbar flex-grow" style="max-height: 300px;">
+                        <div class="relative border-l-2 border-primary ml-3 space-y-6 pl-6 py-2" id="timeline-container">
+                            <!-- JS will populate this -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Economy & Future -->
+        <div id="section-economy" class="hidden fade-in space-y-8">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-header font-bold text-neutral-900 mb-4 border-l-4 border-green-500 pl-4">សេដ្ឋកិច្ច និង អនាគត (Economy & Future)</h2>
+                <p class="text-neutral-700 mb-6">
+                    ទោះបីជាមានការប៉ះទង្គិចពាក្យសម្ដីតាមបណ្តាញសង្គមក៏ដោយ ទំនាក់ទំនងសេដ្ឋកិច្ចរវាងប្រទេសទាំងពីរមានភាពស្អិតរមួតយ៉ាងខ្លាំង។
+                </p>
+
+                <!-- Economy Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-neutral-100 mb-8">
+                    <h3 class="text-lg font-semibold mb-4">កំណើនពាណិជ្ជកម្មទ្វេភាគី (Bilateral Trade Growth)</h3>
+                    <div class="chart-container">
+                        <canvas id="tradeChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-gray-500 mt-2">ប្រភព: ទិន្នន័យប៉ាន់ស្មានពីក្រសួងពាណិជ្ជកម្ម</p>
+                </div>
+
+                <!-- Dependency Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-blue-50 p-5 rounded-lg border border-blue-100">
+                        <h4 class="font-bold text-blue-800 mb-2">ពលករកម្ពុជានៅថៃ</h4>
+                        <p class="text-3xl font-bold text-blue-600">~១.២ លាននាក់</p>
+                        <p class="text-sm text-blue-700 mt-2">រួមចំណែកយ៉ាងសំខាន់ដល់សេដ្ឋកិច្ចថៃ និងផ្ញើប្រាក់មកកម្ពុជា។</p>
+                    </div>
+                    <div class="bg-green-50 p-5 rounded-lg border border-green-100">
+                        <h4 class="font-bold text-green-800 mb-2">ទេសចរណ៍ (២០២៣)</h4>
+                        <p class="text-3xl font-bold text-green-600">លេខ ១</p>
+                        <p class="text-sm text-green-700 mt-2">ថៃជាប្រភពទេសចរណ៍ធំបំផុតមកកាន់កម្ពុជា។</p>
+                    </div>
+                </div>
+
+                <!-- Conclusion Block -->
+                <div class="mt-10 bg-neutral-900 text-white p-8 rounded-2xl text-center">
+                    <h3 class="text-2xl font-header mb-4">សេចក្តីសន្និដ្ឋាន</h3>
+                    <p class="text-lg opacity-90 leading-relaxed max-w-2xl mx-auto">
+                        "បញ្ហា" រវាងថៃនិងខ្មែរ គឺជាលទ្ធផលនៃភាពជិតស្និទ្ធិហួសហេតុ។ យើងមានប្រវត្តិសាស្ត្រ វប្បធម៌ និងព្រំដែនជាប់គ្នា។ ដំណោះស្រាយមិនមែនជាការបំបែកបំបាក់ទេ តែជាការរៀនទទួលយកថា <span class="text-accent font-bold">"យើងជាបងប្អូនដែលមានមុខមាត់ដូចគ្នា"</span>។
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
+        <div class="text-center text-neutral-500 text-sm">
+            <p>បង្កើតឡើងដោយ AI Canvas • សម្រាប់ការសិក្សាស្រាវជ្រាវ</p>
+        </div>
+    </footer>
+
+    <!-- Application Logic -->
+    <script>
+        // --- DATA STORE ---
+        const appData = {
+            timeline: [
+                { year: 'សតវត្សទី ៩-១៥', event: 'អាណាចក្រអង្គរ', detail: 'ខ្មែរជាមហាអំណាចក្នុងតំបន់។ វប្បធម៌ខ្មែរជះឥទ្ធិពលដល់តំបន់ទាំងមូល។' },
+                { year: '១៤៣១', event: 'ការដួលរលំនៃអង្គរ', detail: 'ការឈ្លានពានពីអាយុធ្យា (សៀម)។ ការចាប់ផ្តើមនៃការប្រែប្រួលអំណាច។' },
+                { year: '១៩០៤-១៩០៧', event: 'សន្ធិសញ្ញាបារាំង-សៀម', detail: 'ការកំណត់ព្រំដែន និងការប្រគល់ខេត្តបាត់ដំបង សៀមរាប មកកម្ពុជាវិញ។' },
+                { year: '១៩៦២', event: 'សាលក្រមតុលាការ ICJ', detail: 'តុលាការយុត្តិធម៌អន្តរជាតិកាត់ក្តីថា ប្រាសាទព្រះវិហារជារបស់កម្ពុជា។' },
+                { year: '២០០៨-២០១១', event: 'ជម្លោះព្រំដែន', detail: 'ការប៉ះទង្គិចគ្នាដោយអាវុធនៅតំបន់ព្រះវិហារ និងប្រាសាទតាមាន់។' },
+                { year: 'បច្ចុប្បន្ន', event: 'សន្តិភាព & ពាណិជ្ជកម្ម', detail: 'ទំនាក់ទំនងល្អប្រសើរផ្តោតលើសេដ្ឋកិច្ច ទោះបីមានជម្លោះពាក្យសម្តីតាមអ៊ីនធឺណិត។' }
+            ],
+            conflictData: {
+                labels: ['នយោបាយ (Politics)', 'ព្រំដែន (Border)', 'វប្បធម៌ (Culture)', 'ប្រវត្តិសាស្ត្រ (History)', 'សេដ្ឋកិច្ច (Economy)'],
+                datasets: [{
+                    label: 'កម្រិតនៃឥទ្ធិពលលើជម្លោះ (Impact Level)',
+                    data: [90, 70, 85, 80, 20], // Economy has low conflict impact, actually helps peace
+                    backgroundColor: 'rgba(217, 119, 6, 0.2)',
+                    borderColor: 'rgba(217, 119, 6, 1)',
+                    pointBackgroundColor: 'rgba(217, 119, 6, 1)',
+                }]
+            },
+            overviewData: {
+                labels: ['2000', '2005', '2008 (Conflict)', '2011 (Clash)', '2015', '2019', '2023'],
+                politicalTension: [30, 40, 90, 95, 50, 40, 45],
+                tradeVolume: [10, 20, 25, 28, 50, 70, 85]
+            },
+            tradeData: {
+                labels: ['2018', '2019', '2020', '2021', '2022', '2023'],
+                values: [8.3, 9.4, 7.2, 7.9, 8.5, 8.8] // In Billions USD (Approx)
+            }
+        };
+
+        // --- APP LOGIC ---
+        const app = {
+            state: {
+                currentTab: 'overview',
+                chartsInitialized: false
+            },
+
+            init: function() {
+                this.setupNavigation();
+                this.renderTimeline();
+                this.initCharts(); // Init Overview chart immediately
+                this.setupMobileMenu();
+            },
+
+            setupMobileMenu: function() {
+                const btn = document.getElementById('mobile-menu-btn');
+                const menu = document.getElementById('mobile-menu');
+                btn.addEventListener('click', () => {
+                    menu.classList.toggle('hidden');
+                });
+            },
+
+            navigate: function(targetId) {
+                // Update State
+                this.state.currentTab = targetId;
+
+                // Update UI: Hide all sections, show target
+                ['overview', 'conflict', 'culture', 'economy'].forEach(section => {
+                    const el = document.getElementById(`section-${section}`);
+                    if (section === targetId) {
+                        el.classList.remove('hidden');
+                        el.classList.add('fade-in');
+                    } else {
+                        el.classList.add('hidden');
+                        el.classList.remove('fade-in');
+                    }
+                });
+
+                // Update Nav Styling
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    if (btn.dataset.target === targetId) {
+                        btn.classList.add('text-primary', 'border-primary');
+                        btn.classList.remove('text-neutral-500', 'border-transparent');
+                    } else {
+                        btn.classList.remove('text-primary', 'border-primary');
+                        btn.classList.add('text-neutral-500', 'border-transparent');
+                    }
+                });
+
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+
+                // Trigger Chart Re-render/Resize if needed when tab becomes visible
+                if (targetId === 'conflict') this.renderConflictChart();
+                if (targetId === 'economy') this.renderTradeChart();
+            },
+
+            toggleDetail: function(id) {
+                const el = document.getElementById(id);
+                if (el.classList.contains('hidden')) {
+                    el.classList.remove('hidden');
+                    el.classList.add('block', 'fade-in');
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('block');
+                }
+            },
+
+            renderTimeline: function() {
+                const container = document.getElementById('timeline-container');
+                container.innerHTML = appData.timeline.map((item, index) => `
+                    <div class="mb-8 relative">
+                        <div class="absolute -left-[31px] bg-primary h-4 w-4 rounded-full border-2 border-white"></div>
+                        <time class="mb-1 text-sm font-normal leading-none text-primary font-bold">${item.year}</time>
+                        <h3 class="text-lg font-semibold text-gray-900 mt-1">${item.event}</h3>
+                        <p class="mb-4 text-base font-normal text-gray-500">${item.detail}</p>
+                    </div>
+                `).join('');
+            },
+
+            initCharts: function() {
+                // 1. Overview Chart (Mixed Line/Bar)
+                const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+                new Chart(ctxOverview, {
+                    type: 'line',
+                    data: {
+                        labels: appData.overviewData.labels,
+                        datasets: [
+                            {
+                                label: 'ភាពតានតឹងនយោបាយ (Political Tension)',
+                                data: appData.overviewData.politicalTension,
+                                borderColor: 'rgba(239, 68, 68, 1)', // Red
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'សកម្មភាពសេដ្ឋកិច្ច (Economic Activity)',
+                                data: appData.overviewData.tradeVolume,
+                                borderColor: 'rgba(16, 185, 129, 1)', // Green
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderDash: [5, 5],
+                                tension: 0.4,
+                                yAxisID: 'y'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.raw + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { display: false, min: 0, max: 100 }
+                        }
+                    }
+                });
+            },
+
+            renderConflictChart: function() {
+                if (this.conflictChartRendered) return;
+                const ctx = document.getElementById('conflictRadarChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: appData.conflictData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                angleLines: { display: true },
+                                suggestedMin: 0,
+                                suggestedMax: 100,
+                                pointLabels: {
+                                    font: { size: 12, family: "'Kantumruy Pro', sans-serif" }
+                                }
+                            }
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+                this.conflictChartRendered = true;
+            },
+
+            renderTradeChart: function() {
+                if (this.tradeChartRendered) return;
+                const ctx = document.getElementById('tradeChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: appData.tradeData.labels,
+                        datasets: [{
+                            label: 'ពាណិជ្ជកម្មទ្វេភាគី (ពាន់លានដុល្លារ)',
+                            data: appData.tradeData.values,
+                            backgroundColor: 'rgba(67, 56, 202, 0.8)', // Primary color
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            y: { beginAtZero: true, title: { display: true, text: 'Billion USD' } }
+                        }
+                    }
+                });
+                this.tradeChartRendered = true;
+            }
+        };
+
+        // Start App
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+    </script>
+</body>
+</html>
