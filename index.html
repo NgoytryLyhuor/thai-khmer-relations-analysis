@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ការវិភាគទំនាក់ទំនង ថៃ-ខ្មែរ (Thai-Khmer Relations Analysis)</title>
+    <title>របាយការណ៍វិភាគស៊ីជម្រៅ៖ ទំនាក់ទំនង កម្ពុជា-ថៃ</title>
     
-    <!-- Google Fonts for Khmer -->
+    <!-- Fonts: Battambang (Headers) & Kantumruy Pro (Body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@300;400;600&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
@@ -26,22 +25,10 @@
                         header: ['"Battambang"', 'serif'],
                     },
                     colors: {
-                        neutral: {
-                            50: '#f9fafb',
-                            100: '#f3f4f6',
-                            200: '#e5e7eb',
-                            800: '#1f2937',
-                            900: '#111827',
-                        },
-                        primary: {
-                            light: '#E0E7FF',
-                            DEFAULT: '#4338ca',
-                            dark: '#312e81',
-                        },
-                        accent: {
-                            light: '#FEF3C7',
-                            DEFAULT: '#D97706',
-                        }
+                        primary: '#1e3a8a', // Deep Blue
+                        secondary: '#b91c1c', // Deep Red (Conflict)
+                        accent: '#d97706', // Amber (Culture/History)
+                        bgLight: '#f3f4f6',
                     }
                 }
             }
@@ -49,355 +36,449 @@
     </script>
 
     <style>
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* Chart Container - Critical for responsiveness */
-        .chart-container {
+        /* Custom Utilities */
+        .chart-wrapper {
             position: relative;
+            height: 300px;
             width: 100%;
-            height: 300px; /* Mobile height */
         }
         @media (min-width: 768px) {
-            .chart-container {
-                height: 400px; /* Desktop height */
-            }
+            .chart-wrapper { height: 400px; }
+        }
+        
+        /* Smooth Fade In */
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .fade-in { animation: fadeIn 0.4s ease-in-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Reading Mode Typography */
+        .prose-kh {
+            line-height: 1.8;
+            color: #374151;
+        }
+        .prose-kh h3 {
+            color: #1e3a8a;
+            font-family: "Battambang", serif;
+            font-weight: 700;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+        }
+        .prose-kh p {
+            margin-bottom: 1rem;
         }
     </style>
 </head>
-<body class="bg-neutral-50 text-neutral-800 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-bgLight text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Header / Navigation -->
-    <header class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+    <!-- NAVIGATION -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
                 <!-- Logo -->
-                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="app.navigate('overview')">
-                    <span class="text-xl md:text-2xl text-primary font-header font-bold">ថៃ-ខ្មែរ Insight</span>
+                <div class="flex items-center cursor-pointer" onclick="app.nav('intro')">
+                    <span class="text-2xl font-header font-bold text-primary">ស៊ីជម្រៅ Insight</span>
                 </div>
 
-                <!-- Desktop Nav -->
-                <nav class="hidden md:flex space-x-6 lg:space-x-8">
-                    <button onclick="app.navigate('overview')" id="nav-overview" class="nav-btn text-primary border-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2">ទិដ្ឋភាពរួម</button>
-                    <button onclick="app.navigate('conflict')" id="nav-conflict" class="nav-btn text-neutral-500 border-transparent hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2">ឫសគល់បញ្ហា</button>
-                    <button onclick="app.navigate('culture')" id="nav-culture" class="nav-btn text-neutral-500 border-transparent hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2">វប្បធម៌</button>
-                    <button onclick="app.navigate('economy')" id="nav-economy" class="nav-btn text-neutral-500 border-transparent hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors border-b-2">សេដ្ឋកិច្ច</button>
-                </nav>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-6 items-center">
+                    <button onclick="app.nav('history')" id="btn-history" class="nav-item hover:text-primary font-medium transition">ប្រវត្តិសាស្ត្រ & លង្វែក</button>
+                    <button onclick="app.nav('culture')" id="btn-culture" class="nav-item hover:text-primary font-medium transition">សង្គ្រាមវប្បធម៌</button>
+                    <button onclick="app.nav('conflict2025')" id="btn-conflict2025" class="nav-item text-red-600 font-bold hover:text-red-800 transition bg-red-50 px-3 py-1 rounded">ជម្លោះ ២០២៥</button>
+                    <button onclick="app.nav('analysis')" id="btn-analysis" class="nav-item hover:text-primary font-medium transition">វិភាគ & ដំណោះស្រាយ</button>
+                </div>
 
-                <!-- Mobile menu button -->
+                <!-- Mobile Menu Button -->
                 <div class="md:hidden flex items-center">
-                    <button onclick="app.toggleMenu()" class="text-neutral-500 hover:text-neutral-900 focus:outline-none p-2 border border-neutral-200 rounded-md bg-white">
-                        <span class="text-xl font-bold px-1">☰</span>
+                    <button onclick="app.toggleMobileMenu()" class="text-gray-600 hover:text-primary focus:outline-none p-2 border rounded">
+                        <span class="text-xl font-bold">☰</span>
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 absolute w-full z-40 top-16 shadow-lg left-0">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <button onclick="app.navigate('overview')" class="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md border-b border-gray-100">ទិដ្ឋភាពរួម (Overview)</button>
-                <button onclick="app.navigate('conflict')" class="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md border-b border-gray-100">ឫសគល់បញ្ហា (Root Causes)</button>
-                <button onclick="app.navigate('culture')" class="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md border-b border-gray-100">វប្បធម៌ (Culture)</button>
-                <button onclick="app.navigate('economy')" class="block w-full text-left px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary rounded-md">សេដ្ឋកិច្ច (Economy)</button>
-            </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t absolute w-full shadow-lg">
+            <button onclick="app.nav('history')" class="block w-full text-left px-4 py-3 border-b hover:bg-gray-50">ប្រវត្តិសាស្ត្រ & លង្វែក</button>
+            <button onclick="app.nav('culture')" class="block w-full text-left px-4 py-3 border-b hover:bg-gray-50">សង្គ្រាមវប្បធម៌</button>
+            <button onclick="app.nav('conflict2025')" class="block w-full text-left px-4 py-3 border-b hover:bg-red-50 text-red-600 font-bold">ជម្លោះថ្មី ២០២៥</button>
+            <button onclick="app.nav('analysis')" class="block w-full text-left px-4 py-3 hover:bg-gray-50">វិភាគ & ដំណោះស្រាយ</button>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Content Area -->
-    <main class="flex-grow container mx-auto px-4 py-6 max-w-7xl">
-        
-        <!-- 1. Section: Overview -->
-        <div id="section-overview" class="fade-in">
-            <div class="text-center max-w-3xl mx-auto mb-8">
-                <h1 class="text-2xl md:text-4xl font-header font-bold text-neutral-900 mb-3 leading-tight">ហេតុអ្វីបានជា ថៃ និង ខ្មែរ តែងតែមានបញ្ហានឹងគ្នា?</h1>
-                <p class="text-neutral-600">ការវិភាគលើទិន្នន័យជាក់ស្តែង អំពីនយោបាយ ប្រវត្តិសាស្ត្រ និងសេដ្ឋកិច្ច។</p>
-            </div>
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-5xl">
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-neutral-100 text-center md:text-left">
-                    <div class="text-primary text-3xl mb-1">⚡</div>
-                    <p class="text-sm text-neutral-500">ចំណុចក្ដៅ</p>
-                    <p class="text-xl md:text-2xl font-bold text-neutral-900">ប្រាសាទព្រះវិហារ</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-neutral-100 text-center md:text-left">
-                    <div class="text-accent text-3xl mb-1">💰</div>
-                    <p class="text-sm text-neutral-500">ពាណិជ្ជកម្ម (២០២៣)</p>
-                    <p class="text-xl md:text-2xl font-bold text-neutral-900">>$៨ ពាន់លាន</p>
-                </div>
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-neutral-100 text-center md:text-left">
-                    <div class="text-blue-500 text-3xl mb-1">👥</div>
-                    <p class="text-sm text-neutral-500">ពលករខ្មែរនៅថៃ</p>
-                    <p class="text-xl md:text-2xl font-bold text-neutral-900">~១.២ លាននាក់</p>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-neutral-200">
-                <h2 class="text-lg font-bold mb-4">នយោបាយ vs សេដ្ឋកិច្ច</h2>
-                <div class="chart-container">
-                    <canvas id="overviewChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- 2. Section: Root Causes -->
-        <div id="section-conflict" class="hidden fade-in">
-            <h2 class="text-2xl font-header font-bold text-neutral-900 mb-6 border-l-4 border-red-500 pl-4">ឫសគល់នៃបញ្ហា</h2>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-neutral-100">
-                    <h3 class="font-bold text-center mb-4">រ៉ាដាវិភាគជម្លោះ</h3>
-                    <div class="chart-container" style="height: 300px;">
-                        <canvas id="conflictRadarChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    <div onclick="app.toggleDetail('h-trauma')" class="bg-white border p-4 rounded-lg cursor-pointer hover:border-primary">
-                        <div class="flex justify-between items-center font-bold">
-                            <span>១. ប្រវត្តិសាស្ត្រឈឺចាប់</span>
-                            <span class="text-primary">+</span>
-                        </div>
-                        <div id="h-trauma" class="hidden mt-2 text-sm text-neutral-600 border-t pt-2">
-                            ការចងចាំប្រវត្តិសាស្ត្រអំពីការបាត់បង់ទឹកដី និងសង្គ្រាមពីអតីតកាល។
-                        </div>
-                    </div>
-                    <div onclick="app.toggleDetail('p-politics')" class="bg-white border p-4 rounded-lg cursor-pointer hover:border-primary">
-                        <div class="flex justify-between items-center font-bold">
-                            <span>២. នយោបាយជាតិនិយម</span>
-                            <span class="text-primary">+</span>
-                        </div>
-                        <div id="p-politics" class="hidden mt-2 text-sm text-neutral-600 border-t pt-2">
-                            អ្នកនយោបាយតែងប្រើប្រាស់បញ្ហាព្រំដែនដើម្បីស្វែងរកសំឡេងឆ្នោត។
-                        </div>
-                    </div>
-                    <div onclick="app.toggleDetail('c-culture')" class="bg-white border p-4 rounded-lg cursor-pointer hover:border-primary">
-                        <div class="flex justify-between items-center font-bold">
-                            <span>៣. ជម្លោះវប្បធម៌</span>
-                            <span class="text-primary">+</span>
-                        </div>
-                        <div id="c-culture" class="hidden mt-2 text-sm text-neutral-600 border-t pt-2">
-                            ការដណ្តើមគ្នាធ្វើជាម្ចាស់លើ គុនខ្មែរ/មួយថៃ និង ល្ខោនខោល/ខុន។
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. Section: Culture -->
-        <div id="section-culture" class="hidden fade-in">
-             <h2 class="text-2xl font-header font-bold text-neutral-900 mb-6 border-l-4 border-primary pl-4">វប្បធម៌ & ប្រវត្តិសាស្ត្រ</h2>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden">
-                    <div class="bg-primary text-white p-3 text-center font-bold">បេតិកភណ្ឌរួម</div>
-                    <div class="p-5 space-y-4">
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-blue-600 font-bold">🇰🇭 ខ្មែរ</span>
-                            <span class="text-red-600 font-bold">🇹🇭 ថៃ</span>
-                        </div>
-                        <div class="flex justify-between text-sm"><span>គុនខ្មែរ</span><span>មួយថៃ</span></div>
-                        <div class="flex justify-between text-sm"><span>ល្ខោនខោល</span><span>ខុន</span></div>
-                        <div class="flex justify-between text-sm"><span>អក្សរខ្មែរ</span><span>អក្សរថៃ</span></div>
-                        <div class="bg-yellow-50 p-3 rounded text-xs text-yellow-800 mt-4">
-                            បញ្ជាក់៖ វប្បធម៌ទាំងពីរមានប្រភពតែមួយពីឥណ្ឌា និងអាណាចក្រអង្គរ។
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-sm p-5 border border-neutral-200 h-96 flex flex-col">
-                    <h3 class="font-bold text-center mb-4">កាលប្បវត្តិ</h3>
-                    <div class="overflow-y-auto flex-grow pr-2" id="timeline-container"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 4. Section: Economy -->
-        <div id="section-economy" class="hidden fade-in">
-            <h2 class="text-2xl font-header font-bold text-neutral-900 mb-6 border-l-4 border-green-500 pl-4">សេដ្ឋកិច្ច & អនាគត</h2>
-            
-            <div class="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-neutral-100 mb-6">
-                <h3 class="font-bold mb-4">កំណើនពាណិជ្ជកម្ម (ពាន់លានដុល្លារ)</h3>
-                <div class="chart-container">
-                    <canvas id="tradeChart"></canvas>
-                </div>
-            </div>
-
-            <div class="bg-neutral-900 text-white p-6 rounded-xl text-center">
-                <h3 class="text-xl font-header mb-2">សេចក្តីសន្និដ្ឋាន</h3>
-                <p class="text-neutral-300">
-                    ទោះបីជាមានជម្លោះនយោបាយ ប៉ុន្តែសេដ្ឋកិច្ចនៃប្រទេសទាំងពីរមិនអាចកាត់ផ្តាច់ពីគ្នាបានឡើយ។
-                    <br><br>
-                    <span class="text-accent font-bold">"ជម្លោះកើតឡើងលើបណ្តាញសង្គម តែសន្តិភាពកើតឡើងនៅផ្សារព្រំដែន។"</span>
+        <!-- 0. INTRO / DASHBOARD -->
+        <div id="page-intro" class="fade-in">
+            <div class="text-center mb-10">
+                <h1 class="text-3xl md:text-5xl font-header font-bold text-primary mb-4 leading-tight">ឫសគល់នៃជម្លោះ កម្ពុជា-ថៃ</h1>
+                <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                    ការវិភាគស៊ីជម្រៅលើ "ការចងចាំរួម" (Collective Memory), របួសប្រវត្តិសាស្ត្រ, និងការវិវត្តចុងក្រោយនៃជម្លោះ "សង្គ្រាម Scammers ២០២៥"។
                 </p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase">ចំណុចក្តៅថ្មី (២០២៥)</h3>
+                    <p class="text-2xl font-header font-bold text-red-600 mt-2">សង្គ្រាម Scammers</p>
+                    <p class="text-sm text-gray-600 mt-1">ការវាយប្រហារតាមអាកាស & ឧក្រិដ្ឋកម្មឆ្លងដែន</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-accent">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase">របួសប្រវត្តិសាស្ត្រ</h3>
+                    <p class="text-2xl font-header font-bold text-gray-800 mt-2">លង្វែក ១៥៩៤</p>
+                    <p class="text-sm text-gray-600 mt-1">រឿងព្រេង ព្រះគោព្រះកែវ & ការបាត់បង់ទឹកដី</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-primary">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase">មូលដ្ឋានច្បាប់</h3>
+                    <p class="text-2xl font-header font-bold text-gray-800 mt-2">ផែនទី ១៩០៧</p>
+                    <p class="text-sm text-gray-600 mt-1">សាលក្រម ICJ ឆ្នាំ ១៩៦២</p>
+                </div>
+            </div>
+
+            <!-- Chart: Conflict Dynamics -->
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-8">
+                <h2 class="text-xl font-header font-bold mb-4 text-center">កត្តាជំរុញជម្លោះតាមសម័យកាល</h2>
+                <div class="chart-wrapper">
+                    <canvas id="mainChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-4 italic">ទិន្នន័យបង្ហាញពីការផ្លាស់ប្តូរពីជម្លោះទឹកដី មកជាជម្លោះកូនកាត់ (Hybrid Conflict) នៅឆ្នាំ ២០២៥។</p>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="app.nav('history')" class="bg-primary text-white px-8 py-3 rounded-full font-bold hover:bg-blue-800 transition shadow-lg">ចាប់ផ្តើមអានរបាយការណ៍</button>
+            </div>
+        </div>
+
+        <!-- 1. HISTORY SECTION -->
+        <div id="page-history" class="hidden fade-in">
+            <h2 class="text-3xl font-header font-bold text-primary mb-6 border-b-2 border-primary pb-2">១. មរតកនៃការឈឺចាប់ & ផែនទីអាណានិគម</h2>
+            
+            <div class="bg-white p-6 md:p-8 rounded-xl shadow-sm prose-kh mb-8">
+                <h3>១.១ របួសប្រវត្តិសាស្ត្រ៖ បន្ទាយលង្វែក (The Trauma of Longvek)</h3>
+                <p>
+                    ចំណុចចាប់ផ្តើមនៃ "យុគងងឹត" គឺការដួលរលំនៃរាជធានីលង្វែកនៅខែមករា ឆ្នាំ ១៥៩៤ ក្រោមស្នាដៃស្តេចសៀម ព្រះបាទនរេនសូរ (Naresuan)។
+                    នេះមិនមែនគ្រាន់តែជាការបរាជ័យយោធាទេ តែជាការបាត់បង់ព្រលឹងជាតិ។
+                </p>
+                
+                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 my-4">
+                    <h4 class="font-bold text-accent mb-2">💡 រឿងព្រេង ព្រះគោ ព្រះកែវ</h4>
+                    <p class="text-sm mb-0">
+                        ខ្មែរជឿថាសៀមបាន "លួច" បដិមាករព្រះគោ និងព្រះកែវ ដែលក្នុងពោះមានផ្ទុកក្បួនខ្នាត និងគម្ពីរដីកា។ 
+                        និទានកថានេះពន្យល់ពីមូលហេតុដែលខ្មែរចុះខ្សោយ និងសៀមរីកចម្រើន ដោយចោទថាថៃបាន "លួច" បញ្ញាញាណរបស់ខ្មែរ។
+                        ដូចគ្នានេះដែរ រឿងព្រេងស្តេចសៀមបាញ់ប្រាក់ដួងចូលរបងឫស្សី ក៏ជានិមិត្តរូបនៃការបែកបាក់ផ្ទៃក្នុង។
+                    </p>
+                </div>
+
+                <h3>១.២ ទស្សនៈផ្ទុយគ្នា៖ "ទឹកដីដែលបាត់បង់"</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border p-4 rounded bg-blue-50">
+                        <strong>🇰🇭 ទស្សនៈកម្ពុជា</strong>
+                        <p class="text-sm mt-2">ប្រវត្តិសាស្ត្រក្រោយអង្គរ គឺជាការបាត់បង់ទឹកដី (បាត់ដំបង, សៀមរាប, សុរិន្ទ) ទៅឱ្យប្រទេសជិតខាងដោយអយុត្តិធម៌។</p>
+                    </div>
+                    <div class="border p-4 rounded bg-red-50">
+                        <strong>🇹🇭 ទស្សនៈថៃ</strong>
+                        <p class="text-sm mt-2">ពួកគេរៀនថាបានបាត់បង់ "Lost Territories" (កម្ពុជា និងឡាវ) ទៅឱ្យបារាំង ដើម្បីរក្សាឯករាជ្យភាពរបស់ខ្លួន។</p>
+                    </div>
+                </div>
+
+                <h3>១.៣ បញ្ហាផែនទី និងសន្ធិសញ្ញា ១៩០៤/១៩០៧</h3>
+                <p>ជម្លោះព្រះវិហារកើតចេញពីភាពមិនច្បាស់លាស់រវាង៖</p>
+                <ul class="list-disc ml-5 space-y-2">
+                    <li><strong>សន្ធិសញ្ញា ១៩០៤៖</strong> កំណត់ព្រំដែនតាម "ខ្សែបែងចែកទឹក" (Watershed Line) ដែលនឹងធ្វើឱ្យប្រាសាទស្ថិតនៅដីថៃ។</li>
+                    <li><strong>ផែនទីឧបសម្ព័ន្ធ ១ (១៩០៧)៖</strong> បារាំងគូសឱ្យប្រាសាទស្ថិតនៅដីខ្មែរ។ សៀមមិនបានតវ៉ាទេនៅពេលនោះ។</li>
+                    <li><strong>សាលក្រម ICJ ១៩៦២៖</strong> សម្រេចថាប្រាសាទជារបស់ខ្មែរ ដោយផ្អែកលើការទទួលស្គាល់ដោយស្ងៀមស្ងាត់ (Acquiescence) របស់ថៃ។ ប៉ុន្តែបញ្ហាដី ៤.៦ គីឡូម៉ែត្រក្រឡា នៅតែមិនដាច់ស្រេច។</li>
+                </ul>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="app.nav('culture')" class="text-primary font-bold hover:underline">ទៅកាន់៖ សង្គ្រាមវប្បធម៌ →</button>
+            </div>
+        </div>
+
+        <!-- 2. CULTURE SECTION -->
+        <div id="page-culture" class="hidden fade-in">
+            <h2 class="text-3xl font-header font-bold text-accent mb-6 border-b-2 border-accent pb-2">២. សង្គ្រាមវប្បធម៌ & អត្តសញ្ញាណ</h2>
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm mb-6">
+                <p class="mb-4">ភាពស្រដៀងគ្នានៃវប្បធម៌មិនបាននាំមកនូវការយោគយល់គ្នាទេ តែបែរជាបង្កើតនូវការប្រកួតប្រជែងថា "នរណាជាម្ចាស់ដើម" (Zero-sum game)។</p>
+                
+                <h3 class="font-bold text-lg text-primary mb-3">២.១ កុបកម្មស្ថានទូត ២០០៣</h3>
+                <p class="text-sm text-gray-600 mb-4">
+                    កើតចេញពីពាក្យចចាមអារ៉ាមមិនពិតថា តារាថៃ (ស៊ុប វណ្ណាន់) ថា "អង្គរវត្តជារបស់ថៃ"។ 
+                    នេះបង្ហាញពីភាពផុយស្រួយនៃមនោសញ្ចេតនាជាតិ និងការភ័យខ្លាចការបាត់បង់បេតិកភណ្ឌ។
+                </p>
+
+                <h3 class="font-bold text-lg text-primary mb-3">២.២ ការប្រៀបធៀបទស្សនៈវប្បធម៌</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-500 border rounded-lg">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                            <tr>
+                                <th class="px-6 py-3">វិស័យ</th>
+                                <th class="px-6 py-3 text-blue-800">ទស្សនៈកម្ពុជា 🇰🇭</th>
+                                <th class="px-6 py-3 text-red-800">ទស្សនៈថៃ 🇹🇭</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="bg-white border-b">
+                                <td class="px-6 py-4 font-bold">ល្ខោន</td>
+                                <td class="px-6 py-4">ល្ខោនខោល ជាប្រភពដើម។ ថៃយកទៅកែច្នៃ។</td>
+                                <td class="px-6 py-4">"ឃោន" (Khon) ជាសិល្បៈរាជវាំងអយុធ្យា ដាច់ដោយឡែក។</td>
+                            </tr>
+                            <tr class="bg-gray-50 border-b">
+                                <td class="px-6 py-4 font-bold">ប្រដាល់</td>
+                                <td class="px-6 py-4">"គុនខ្មែរ" មានឆ្លាក់លើជញ្ជាំងអង្គរ។ (ស៊ីហ្គេម ២០២៣)</td>
+                                <td class="px-6 py-4">"មួយថៃ" ជាកីឡាអន្តរជាតិមានច្បាប់ខុសគ្នា។</td>
+                            </tr>
+                            <tr class="bg-white">
+                                <td class="px-6 py-4 font-bold">អ៊ីនធឺណិត</td>
+                                <td class="px-6 py-4">ការពារមរតកពីការ "លួច" (Cultural Theft)។</td>
+                                <td class="px-6 py-4">ប្រើពាក្យ "Claimbodia" ដើម្បីចំអក។</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="app.nav('conflict2025')" class="text-red-600 font-bold hover:underline">ទៅកាន់៖ ជម្លោះ ២០២៥ →</button>
+            </div>
+        </div>
+
+        <!-- 3. CONFLICT 2025 SECTION (NEW DATA) -->
+        <div id="page-conflict2025" class="hidden fade-in">
+            <h2 class="text-3xl font-header font-bold text-red-600 mb-6 border-b-2 border-red-600 pb-2">៣. ជម្លោះថ្មី ២០២៤-២០២៥៖ សង្គ្រាម Scammers</h2>
+            
+            <div class="bg-red-50 border border-red-200 p-6 rounded-xl mb-8">
+                <h3 class="text-xl font-bold text-red-800 mb-2">⚠️ ការវិវត្តថ្មីដ៏គ្រោះថ្នាក់</h3>
+                <p class="text-gray-700">
+                    ឆ្នាំ ២០២៥ ជម្លោះបានប្រែក្លាយពីបញ្ហាទឹកដីសុទ្ធសាធ មកជា "សង្គ្រាមប្រឆាំងឧក្រិដ្ឋកម្មឆ្លងដែន"។ 
+                    ថៃបានបើកប្រតិបត្តិការ "War on Scammers" ដោយចោទថា កាស៊ីណូនៅប៉ោយប៉ែត និងអូស្មាច់ ជាមូលដ្ឋានរបស់ក្រុមឆបោក។
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Timeline of 2025 -->
+                <div class="bg-white p-6 rounded-xl shadow-sm h-full">
+                    <h3 class="font-bold text-lg mb-4">កាលប្បវត្តិវិបត្តិ ២០២៥</h3>
+                    <ul class="space-y-4 border-l-2 border-red-300 pl-4 relative">
+                        <li class="relative">
+                            <span class="absolute -left-[21px] top-1 bg-red-500 w-3 h-3 rounded-full"></span>
+                            <strong class="text-red-800">ឧសភា ២០២៥:</strong> ការប៉ះទង្គិចព្រំដែន ទាហានកម្ពុជាម្នាក់ស្លាប់។
+                        </li>
+                        <li class="relative">
+                            <span class="absolute -left-[21px] top-1 bg-red-500 w-3 h-3 rounded-full"></span>
+                            <strong class="text-red-800">កក្កដា ២០២៥:</strong> ថៃប្រើប្រាស់ F-16 វាយប្រហារគោលដៅនៅប៉ោយប៉ែត (អះអាងថាជាមូលដ្ឋាន Drone របស់ក្រុម Scammers)។
+                        </li>
+                        <li class="relative">
+                            <span class="absolute -left-[21px] top-1 bg-red-500 w-3 h-3 rounded-full"></span>
+                            <strong class="text-red-800">សីហា ២០២៥:</strong> កម្ពុជាឆ្លើយតបដោយគ្រាប់រ៉ុក្កែត BM-21 Grad។
+                        </li>
+                        <li class="relative">
+                            <span class="absolute -left-[21px] top-1 bg-green-500 w-3 h-3 rounded-full"></span>
+                            <strong class="text-green-800">តុលា ២០២៥:</strong> កិច្ចព្រមព្រៀងសន្តិភាពគូឡាឡាំពួ (Kuala Lumpur Accord) សម្របសម្រួលដោយ អាមេរិក និង ម៉ាឡេស៊ី។
+                        </li>
+                        <li class="relative">
+                            <span class="absolute -left-[21px] top-1 bg-red-500 w-3 h-3 rounded-full"></span>
+                            <strong class="text-red-800">ធ្នូ ២០២៥:</strong> បទឈប់បាញ់ត្រូវបានរំលោភបំពាន។
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Strategic Map / Analysis -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4">យុទ្ធសាស្ត្រយោធា & នយោបាយ</h3>
+                    <div class="space-y-4 text-sm text-gray-700">
+                        <p><strong>🇹🇭 យុទ្ធសាស្ត្រថៃ៖</strong> ប្រកាសថា "មិនមែនវាយប្រហារកម្ពុជា" តែវាយប្រហារ "កងទ័ពឆបោក" (Scam Army)។ ប្រើប្រាស់បញ្ហានេះដើម្បីបង្ហាញស្នាដៃនយោបាយក្នុងស្រុក។</p>
+                        <p><strong>🇰🇭 ការឆ្លើយតបកម្ពុជា៖</strong> ចាត់ទុកជាការរំលោភអធិបតេយ្យភាពធ្ងន់ធ្ងរ។ ការពារជាតិជាប្រភពនៃភាពស្របច្បាប់ (Legitimacy) របស់រដ្ឋាភិបាល។</p>
+                        <p><strong>🌍 កត្តាអន្តរជាតិ៖</strong> UN ព្រួយបារម្ភពីជនស៊ីវិល និងជនបរទេសដែលជាប់ក្នុងមជ្ឈមណ្ឌល Scammers។</p>
+                    </div>
+                    <div class="chart-wrapper mt-4" style="height: 200px;">
+                        <canvas id="impact2025Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end mt-6">
+                <button onclick="app.nav('analysis')" class="text-primary font-bold hover:underline">ទៅកាន់៖ វិភាគ & ដំណោះស្រាយ →</button>
+            </div>
+        </div>
+
+        <!-- 4. ANALYSIS & CONCLUSION -->
+        <div id="page-analysis" class="hidden fade-in">
+            <h2 class="text-3xl font-header font-bold text-primary mb-6">៤. វិភាគសេដ្ឋកិច្ច & ដំណោះស្រាយ</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <!-- Economic Impact -->
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4">ផលប៉ះពាល់សេដ្ឋកិច្ច</h3>
+                    <ul class="list-disc ml-5 space-y-2 text-gray-700">
+                        <li><strong>ពាណិជ្ជកម្ម៖</strong> ធ្លាក់ចុះយ៉ាងខ្លាំងនៅឆ្នាំ ២០២៥ ដោយសារការបិទច្រកព្រំដែន។</li>
+                        <li><strong>ពលករ៖</strong> ពលករខ្មែររាប់លាននាក់នៅថៃប្រឈមហានិភ័យ ប៉ុន្តែសេដ្ឋកិច្ចថៃក៏ត្រូវការពួកគេ (សំណង់, កសិកម្ម)។</li>
+                        <li><strong>ទេសចរណ៍៖</strong> ភ្ញៀវទេសចរណ៍ធ្លាក់ចុះទាំងសងខាង។</li>
+                    </ul>
+                </div>
+
+                <!-- Conclusion -->
+                <div class="bg-neutral-900 text-white p-6 rounded-xl shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-accent">សេចក្តីសន្និដ្ឋាន</h3>
+                    <p class="leading-relaxed opacity-90">
+                        ជម្លោះនេះកើតចេញពីការប្រទាក់ក្រឡានៃ <strong>"ស្រមោលប្រវត្តិសាស្ត្រ"</strong> (លង្វែក), <strong>"ភាពស្រពេចស្រពិលនៃច្បាប់"</strong> (ផែនទី), និង <strong>"ផលប្រយោជន៍នយោបាយ"</strong>។
+                        <br><br>
+                        ឆ្នាំ ២០២៥ បង្ហាញថា បញ្ហាប្រពៃណីត្រូវបានបន្ថែមដោយបញ្ហាថ្មីគឺ <strong>ឧក្រិដ្ឋកម្មតាមអ៊ីនធឺណិត</strong>។ ដំណោះស្រាយមិនអាចប្រើតែកម្លាំងយោធា ឬកិច្ចព្រមព្រៀងមួយឆាវៗ (ដូចនៅ KL) ទេ។ ប្រទេសទាំងពីរត្រូវរៀនរស់ជាមួយគ្នា ដោយដោះស្រាយ "ឬសគល់នៃការមិនទុកចិត្តគ្នា"។
+                    </p>
+                </div>
             </div>
         </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t mt-8 py-6 text-center text-sm text-neutral-500">
-        &copy; 2024 Thai-Khmer Analysis Tool
+    <!-- FOOTER -->
+    <footer class="bg-white border-t py-6 text-center text-gray-500 text-sm">
+        ផ្អែកលើរបាយការណ៍ស្រាវជ្រាវឆ្នាំ ២០២៥ • បង្កើតឡើងដោយ លីហួរ (Lyhuor)
     </footer>
 
-    <!-- LOGIC -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         const app = {
-            data: {
-                timeline: [
-                    { y: 'សតវត្សទី ៩-១៥', t: 'អាណាចក្រអង្គរ', d: 'ខ្មែរជាមហាអំណាច។' },
-                    { y: '១៤៣១', t: 'អង្គរដួលរលំ', d: 'សៀមវាយយកអង្គរ។' },
-                    { y: '១៩០៧', t: 'បាត់ដំបង/សៀមរាប', d: 'ថៃប្រគល់ខេត្តឱ្យខ្មែរវិញ។' },
-                    { y: '១៩៦២', t: 'សាលក្រម ICJ', d: 'ព្រះវិហារជារបស់ខ្មែរ។' },
-                    { y: '២០០៨', t: 'ជម្លោះព្រះវិហារ', d: 'បាញ់បោះនៅព្រំដែន។' },
-                    { y: 'បច្ចុប្បន្ន', t: 'ពាណិជ្ជកម្ម', d: 'សេដ្ឋកិច្ចរីកចម្រើន។' }
-                ]
-            },
-            
-            // Start the app
             init: function() {
-                // Remove the broken setupNavigation call
-                this.renderTimeline();
-                this.initOverviewChart(); // Load first chart immediately
+                // Load Charts
+                this.renderMainChart();
+                this.renderImpactChart();
+                
+                // Set default nav state active style
+                this.updateNavStyle('intro');
             },
 
-            // Navigation Logic
-            navigate: function(tabId) {
-                // 1. Hide all sections
-                ['overview', 'conflict', 'culture', 'economy'].forEach(id => {
-                    document.getElementById('section-' + id).classList.add('hidden');
-                    document.getElementById('nav-' + id)?.classList.replace('text-primary', 'text-neutral-500');
-                    document.getElementById('nav-' + id)?.classList.replace('border-primary', 'border-transparent');
+            // Navigation Handler
+            nav: function(pageId) {
+                // 1. Hide all pages
+                ['intro', 'history', 'culture', 'conflict2025', 'analysis'].forEach(id => {
+                    const el = document.getElementById('page-' + id);
+                    if (el) el.classList.add('hidden');
                 });
 
-                // 2. Show target section
-                document.getElementById('section-' + tabId).classList.remove('hidden');
-                
-                // 3. Update Button Style (Desktop)
-                const btn = document.getElementById('nav-' + tabId);
-                if(btn) {
-                    btn.classList.replace('text-neutral-500', 'text-primary');
-                    btn.classList.replace('border-transparent', 'border-primary');
+                // 2. Show target page
+                const target = document.getElementById('page-' + pageId);
+                if (target) {
+                    target.classList.remove('hidden');
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
+
+                // 3. Update Menu Styles (Desktop)
+                this.updateNavStyle(pageId);
 
                 // 4. Hide mobile menu
                 document.getElementById('mobile-menu').classList.add('hidden');
-
-                // 5. Load charts if needed (Lazy Load)
-                if (tabId === 'conflict') this.initConflictChart();
-                if (tabId === 'economy') this.initTradeChart();
             },
 
-            toggleMenu: function() {
-                document.getElementById('mobile-menu').classList.toggle('hidden');
+            updateNavStyle: function(activeId) {
+                // Reset all
+                document.querySelectorAll('.nav-item').forEach(el => {
+                    if (el.id === 'btn-conflict2025') {
+                        // Special style for conflict button
+                        el.className = 'nav-item text-red-600 font-bold hover:text-red-800 transition bg-red-50 px-3 py-1 rounded';
+                    } else {
+                        el.className = 'nav-item text-gray-600 hover:text-primary font-medium transition';
+                    }
+                });
+
+                // Set Active
+                const activeBtn = document.getElementById('btn-' + activeId);
+                if (activeBtn) {
+                    if (activeId === 'conflict2025') {
+                         activeBtn.classList.add('ring-2', 'ring-red-300');
+                    } else {
+                        activeBtn.classList.add('text-primary', 'font-bold', 'border-b-2', 'border-primary');
+                        activeBtn.classList.remove('text-gray-600');
+                    }
+                }
             },
 
-            toggleDetail: function(id) {
-                const el = document.getElementById(id);
-                el.classList.toggle('hidden');
+            toggleMobileMenu: function() {
+                const menu = document.getElementById('mobile-menu');
+                menu.classList.toggle('hidden');
             },
 
-            renderTimeline: function() {
-                const container = document.getElementById('timeline-container');
-                if(!container) return;
-                container.innerHTML = this.data.timeline.map(item => `
-                    <div class="mb-6 ml-4 border-l-2 border-primary pl-4 relative">
-                        <div class="absolute -left-[21px] top-0 bg-primary w-3 h-3 rounded-full"></div>
-                        <div class="text-sm font-bold text-primary">${item.y}</div>
-                        <div class="font-bold text-gray-800">${item.t}</div>
-                        <div class="text-sm text-gray-500">${item.d}</div>
-                    </div>
-                `).join('');
-            },
-
-            // --- CHARTS ---
-            
-            initOverviewChart: function() {
-                const ctx = document.getElementById('overviewChart');
-                if(!ctx) return;
+            // --- CHART RENDERING ---
+            renderMainChart: function() {
+                const ctx = document.getElementById('mainChart');
+                if (!ctx) return;
                 
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: ['2000', '2008', '2011', '2015', '2019', '2023'],
+                        labels: ['1594 (លង្វែក)', '1907 (ផែនទី)', '1962 (ICJ)', '2008 (ព្រះវិហារ)', '2023 (ស៊ីហ្គេម)', '2025 (Scammers)'],
                         datasets: [
-                            { label: 'ភាពតានតឹងនយោបាយ', data: [30, 90, 95, 50, 40, 45], borderColor: 'red', tension: 0.4 },
-                            { label: 'សេដ្ឋកិច្ច', data: [10, 25, 28, 50, 70, 85], borderColor: 'green', borderDash: [5,5], tension: 0.4 }
+                            {
+                                label: 'ជម្លោះនយោបាយ/ទឹកដី',
+                                data: [80, 60, 70, 95, 40, 90],
+                                borderColor: '#1e3a8a', // Blue
+                                tension: 0.3,
+                                fill: false
+                            },
+                            {
+                                label: 'ជម្លោះវប្បធម៌',
+                                data: [20, 10, 30, 85, 95, 60],
+                                borderColor: '#d97706', // Amber
+                                tension: 0.3,
+                                fill: false
+                            },
+                            {
+                                label: 'បញ្ហាថ្មី (ឧក្រិដ្ឋកម្ម/Scam)',
+                                data: [0, 0, 0, 10, 30, 95],
+                                borderColor: '#dc2626', // Red
+                                borderDash: [5, 5],
+                                tension: 0.3,
+                                fill: true,
+                                backgroundColor: 'rgba(220, 38, 38, 0.1)'
+                            }
                         ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
-                        scales: { y: { display: false } },
-                        plugins: { legend: { position: 'bottom' } }
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.dataset.label + ': ' + context.raw + '%';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: { display: false, min: 0, max: 100 }
+                        }
                     }
                 });
             },
 
-            initConflictChart: function() {
-                if(this.conflictChartLoaded) return;
-                const ctx = document.getElementById('conflictRadarChart');
-                if(!ctx) return;
+            renderImpactChart: function() {
+                const ctx = document.getElementById('impact2025Chart');
+                if (!ctx) return;
 
                 new Chart(ctx, {
-                    type: 'radar',
+                    type: 'doughnut',
                     data: {
-                        labels: ['នយោបាយ', 'ព្រំដែន', 'វប្បធម៌', 'ប្រវត្តិសាស្ត្រ', 'សេដ្ឋកិច្ច'],
+                        labels: ['ប៉ះពាល់ពាណិជ្ជកម្ម', 'ជនស៊ីវិលផ្លាស់ទី', 'ខូចខាតហេដ្ឋារចនាសម្ព័ន្ធ'],
                         datasets: [{
-                            label: 'កម្រិតជម្លោះ',
-                            data: [90, 70, 85, 80, 20],
-                            backgroundColor: 'rgba(217, 119, 6, 0.2)',
-                            borderColor: '#D97706',
-                            pointBackgroundColor: '#D97706'
+                            data: [50, 30, 20],
+                            backgroundColor: ['#1e3a8a', '#dc2626', '#d97706']
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { r: { suggestedMin: 0, suggestedMax: 100 } },
-                        plugins: { legend: { display: false } }
+                        plugins: { legend: { position: 'right' } }
                     }
                 });
-                this.conflictChartLoaded = true;
-            },
-
-            initTradeChart: function() {
-                if(this.tradeChartLoaded) return;
-                const ctx = document.getElementById('tradeChart');
-                if(!ctx) return;
-
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['2019', '2020', '2021', '2022', '2023'],
-                        datasets: [{
-                            label: 'ទំហំពាណិជ្ជកម្ម',
-                            data: [9.4, 7.2, 7.9, 8.5, 8.8],
-                            backgroundColor: '#4338ca',
-                            borderRadius: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
-                    }
-                });
-                this.tradeChartLoaded = true;
             }
         };
 
-        // Run when page loads
+        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             app.init();
         });
