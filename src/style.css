@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-bgLight text-gray-800 font-sans;
+  }
+}
+
+@layer components {
+  .chart-wrapper {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .chart-wrapper {
+      height: 400px;
+    }
+  }
+
+  .fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .prose-kh {
+    line-height: 1.8;
+    color: #374151;
+  }
+  .prose-kh h3 {
+    color: #1e3a8a;
+    font-family: "Battambang", serif;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+  }
+  .prose-kh p {
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
