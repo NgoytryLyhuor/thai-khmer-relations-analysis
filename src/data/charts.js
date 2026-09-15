@@ -169,3 +169,37 @@ export const microCreditChart = {
     scales: { y: { min: 0, title: { display: true, text: 'ពាន់លាន USD' } } },
   },
 }
+
+export const forecastChart = {
+  type: 'bar',
+  data: {
+    labels: ['2024 (ពិត)', '2025 (ពិតប្រហែល)', '2026 (ព្យាករ)', '2027 (ព្យាករ)', '2028 (ព្យាករ)', '2029 (គោលដៅ)'],
+    datasets: [
+      {
+        label: 'កំណើនសេដ្ឋកិច្ច %',
+        data: [6.0, 5.2, 3.9, 4.9, 5.1, 5.5],
+        backgroundColor: ['#1e3a8a', '#1e3a8a', '#dc2626', '#d97706', '#d97706', '#059669'],
+      },
+    ],
+  },
+  options: {
+    ...defaults,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label(ctx) {
+            return 'កំណើន ' + ctx.raw + '%'
+          },
+        },
+      },
+    },
+    scales: {
+      y: {
+        min: 0,
+        max: 7,
+        ticks: { callback: (v) => v + '%' },
+      },
+    },
+  },
+}

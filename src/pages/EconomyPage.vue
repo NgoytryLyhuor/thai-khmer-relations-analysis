@@ -2,7 +2,7 @@
 import { inject } from 'vue'
 import ChartJs from '../components/ChartJs.vue'
 import Cite from '../components/Cite.vue'
-import { gdpGrowthChart, touristChart, minWageChart, microCreditChart } from '../data/charts'
+import { gdpGrowthChart, touristChart, minWageChart, microCreditChart, forecastChart } from '../data/charts'
 
 const nav = inject('nav')
 
@@ -266,6 +266,82 @@ const stresses = [
         <h4 class="font-bold text-lg mb-2">{{ c.emoji }} {{ c.title }}</h4>
         <p class="text-sm text-gray-600 leading-relaxed">{{ c.text }}</p>
       </div>
+    </div>
+
+    <!-- 5.10 Outlook 2027-2029 -->
+    <h3 class="text-2xl font-header font-bold text-primary mb-4">៥.១០ ទស្សនវិស័យសេដ្ឋកិច្ច ២០២៧ – ២០២៩៖ តើបន្ទាប់ទៅនឹងទៅជាយ៉ាងណា?</h3>
+    <p class="text-gray-700 mb-4 leading-relaxed">
+      បច្ចប្បន្នកម្មសេដ្ឋកិច្ចកម្ពុជា ដាក់ចំណុចទាបបំផុតនៅឆ្នាំ ២០២៦ (កំណើនត្រឹមតែ ~៣.០–៤.២% ដោយសារជម្លោះព្រំដែន និងពន្ធគយ) ប៉ុន្តែអ្នកជំនាញពី <strong>World Bank, ADB, IMF និងរាជរដ្ឋាភិបាល</strong> មើលឃើញការងើបឡើងវិញនៅ ២០២៧–២០២៨ មុនការសាកល្បងធំបំផុតគឺ <strong>ការចាកចេញពីប្រទេសអភិវឌ្ឍន៍តិចតួច (LDC) នៅថ្ងៃទី ១៩ ធ្នូ ២០២៩</strong> ។ <Cite :ids="[24, 25, 26, 28]" />
+    </p>
+
+    <div class="bg-white p-5 rounded-xl shadow-sm mb-6">
+      <h4 class="font-bold text-accent mb-3">📊 កំណើនសេដ្ឋកិច្ច ពិត vs ការព្យាករ (គិតជា %)</h4>
+      <ChartJs :chart="forecastChart" />
+      <p class="text-xs text-gray-500 mt-2">២០២៤–២០២៥ = តួលេខពិតប្រហារ <Cite :ids="[1]" />; ២០២៦ = World Bank 3.9% និង ADB 4.1% <Cite :ids="[24, 25]" />; ២០២៧ = World Bank 4.9% / ADB 4.7% <Cite :ids="[24, 25]" />; ២០២៨ = World Bank 5.1% <Cite :ids="[25]" />; ២០២៩ = គោលដៅរដ្ឋាភិបាល ~៥.៥% <Cite :ids="[29]" /> ។</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-amber-500">
+        <h4 class="font-bold text-primary">២០២៧ · ការងើបឡើងវិញ</h4>
+        <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+          World Bank ព្យាករកំណើន <strong>4.9%</strong> (ADB 4.7–5.0%, រដ្ឋាភិបាល 5.0%) នៅពេលពាណិជ្ជកម្ម ទេសចរណ៍ និង FDI ងើបឡើងវិញ ។
+          អតិផរណាធ្លាក់មក ~2.5% ។ ប៉ុន្តែការបិទព្រំដែនជាមួយថៃ បន្តដកកំណើន ~១ភាគរយ/ឆ្នាំ រហូតដល់ ២០៣០ <Cite :ids="[24, 25, 29]" /> ។
+        </p>
+      </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-emerald-600">
+        <h4 class="font-bold text-primary">២០២៨ · បន្តពង្រឹង</h4>
+        <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+          World Bank baseline កើនដល់ <strong>5.1%</strong> ដោយសារ (1) ទេសចរណ៍ស្ទុះងើបឡើងវិញកាន់តែពេញលេញ (2) រោងចក្រថ្មីចាប់ផលិតកម្ម (អេឡិចត្រូនិក, សំបកកង់, គ្រឿងសង្ហារឹម) (3) ព្រលានយន្តហោះអន្តរជាតិថ្មីភ្នំពេញ បើកសេវាកម្ម <Cite :ids="[25, 31]" /> ។ ផលប៉ះពាល់នៃការកាត់បន្ថយកម្មករសាងសង់វិលត្រលប់ត្រូវបានស្រូបយក ។
+        </p>
+      </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border-t-4 border-red-600">
+        <h4 class="font-bold text-primary">២០២៩ · ឆ្នាំសាកល្បងធំបំផុត</h4>
+        <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+          កម្ពុជា<strong>ចាកចេញពីក្រុម LDC នៅថ្ងៃទី ១៩ ធ្នូ ២០២៩</strong> ។ រដ្ឋាភិបាលកំណត់គោលដៅកំណើន ~<strong>5.5%</strong> ជាមធ្យម ២០២៨–២០២៩ <Cite :ids="[29]" /> — ប៉ុន្តែការបាត់បង់អត្ថប្រយោជន៍ពន្ធ (EBA/GSP+ 0% → GSP 8.8%) នឹងសាកល្បងការប្រកួតប្រជែងនាំចេញ ។ <Cite :ids="[27, 28, 30]" />
+        </p>
+      </div>
+    </div>
+
+    <div class="bg-amber-50 border border-amber-300 p-6 rounded-xl shadow-sm mb-6 dark:bg-amber-900/20 dark:border-amber-700">
+      <h4 class="font-bold text-accent mb-3">🛂 តើការចាកចេញពី LDC នៅ ២០២៩ ផ្លាស់ប្តូរអ្វីខ្លះ?</h4>
+      <ul class="list-disc ml-6 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+        <li><strong>ពន្ធនាំចេញទៅសហភាពអឺរ៉ុប/កាណាដា</strong>៖ ពី 0% (GSP+/EBA) ឡើងទៅ ~8.8% (GSP ស្តង់ដារ) ឬ ~11.5% (MFN) — ម្យ៉ាងទៀតសំលៀកបំពាក់ ~16.4% ។ EU + កាណាដា = ~29.4% នៃការនាំចេញទាំងអស់ <Cite :ids="[27]" /> ។</li>
+        <li><strong>ច្បាប់ដើមកំណើតទំនិញ</strong>៖ តម្រូវឲ្យមានសមាសភាពក្នុងស្រុក 60% (ជំនួស 30% សម្រាប់ LDC) <Cite :ids="[27, 28]" /> ។</li>
+        <li><strong>UNDP ប៉ាន់ស្មាន</strong>​៖ ការចាកចេញនេះអាចធ្វើឲ្យ GDP ធ្លាក់ ~$2,947 លានដុល្លារ ២០២៧–២០៣០ និងការនាំចេញសរុប −2.4% (~$771.8 លាន) បើគ្មានគោលនយោបាយតបត្រ <Cite :ids="[27]" /> ។</li>
+        <li><strong>បន្ទាប់ពីចាកចេញ</strong>៖ អាជីវកម្មផ្លាស់ទៅកិច្ចព្រមព្រៀងពាណិជ្ជកម្មទ្វេភាគី (ដូចជាជាមួយ EU ដែលកំពុងចរចា) និងការធ្វើពិពិធកម្មទីផ្សារ <Cite :ids="[30]" /> ។</li>
+      </ul>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white p-5 rounded-xl shadow-sm">
+        <h4 class="font-bold text-emerald-700 mb-2">📈 កត្តាជំរុញការងើបឡើងវិញ</h4>
+        <ul class="list-disc ml-6 space-y-1.5 text-sm text-gray-700">
+          <li>FDI ២០២៥ ឈាន <strong>$5.1 ពាន់លាន</strong> (+15% y/y, ~១០.១% នៃ GDP) បង្កើត ~400,000 កន្លែងការងារ <Cite :ids="[26, 33]" /></li>
+          <li>ការអនុម័តវិនិយោគថេរ +45% ក្នុង ២០២៥ <Cite :ids="[24]" /></li>
+          <li>ពិពិធកម្មរោងចក្រ៖ អេឡិចត្រូនិក, សំបកកង់, គ្រឿងសង្ហារឹម <Cite :ids="[24, 30]" /></li>
+          <li>ទំនិញនាំចេញ +17.7% (Q1 2026) <Cite :ids="[26]" /></li>
+          <li>ព្រលានយន្តហោះអន្តរជាតិថ្មីភ្នំពេញ <Cite :ids="[24]" /></li>
+        </ul>
+      </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm">
+        <h4 class="font-bold text-red-700 mb-2">⚠️ ហានិភ័យចម្បង</h4>
+        <ul class="list-disc ml-6 space-y-1.5 text-sm text-gray-700">
+          <li>ស្ថានភាពព្រំដែន និងកម្មករវិលត្រលប់ ~១លាននាក់ <Cite :ids="[26]" /></li>
+          <li>តម្លៃប្រេង/អតិផរណា (ឈាន 5.8% ខែមេសា ២០២៦) ដែលបង្កើនភាពក្រីក្រ ~1.4pp បើប្រេងឡើង 10% <Cite :ids="[26]" /></li>
+          <li>អចលនទ្រព្យ & បំណុលមិនដំណើរការ (NPL) <Cite :ids="[32, 34]" /></li>
+          <li>ផលប៉ះពាល់ពន្ធគយអាមេរិកលើកាត់ដេរ <Cite :ids="[1, 2]" /></li>
+          <li>ការបាត់បង់អត្ថប្រយោជន៍ពន្ធ LDC និងការប្រកួតប្រជែងខ្សោយ (ផលិតភាព +0.8%/ឆ្នាំ ទល់នឹងត្រូវការ ~2%) <Cite :ids="[27, 31]" /></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="bg-neutral-900 text-white p-6 rounded-xl shadow-sm mb-6">
+      <h4 class="font-bold text-accent mb-3">🧭 ទិសដៅយុទ្ធសាស្ត្រ & Vision 2050</h4>
+      <p class="text-sm leading-relaxed opacity-90">
+        កម្ពុជាមាន "បង្អួចឱកាសបច្ចុប្បន្នភាពប្រជាជន" (working-age share កំពូល ~២០៤៣) និងកងកម្លាំងពលកម្មធំជាងបច្ចុប្បន្ន ~៣.៧ លាននាក់នៅឆ្នាំ ២០៥០ ។ ប៉ុន្តែការសម្រេចបាន <strong>ចំណូលខ្ពស់ (Vision 2050)</strong> ត្រូវការកំណើន ~<strong>7% រៀងរាល់ឆ្នាំ គ្រប់២០ឆ្នាំ</strong> — ខណៈពេលផលិតភាពបច្ចុប្បន្នរីកចម្រើនត្រឹម ~0.8%/ឆ្នាំ គឺខ្វះល្បឿនយ៉ាងច្រើន <Cite :ids="[24, 31, 32]" /> ។
+        <br><br>
+        អាទិភាពគោលនយោបាយ (World Bank CPF & យុទ្ធសាស្ត្របញ្ចកោណ)៖ (1) កសាងមូលធនមនុស្ស - អប់រំជំនាញ (2) បង្កើនការប្រកួតប្រជែង និងភាពធន់ (3) គ្រប់គ្រងការផ្លាស់ប្តូរ LDC ដោយរលូន និង (4) ការពារស្ថិរភាពម៉ាក្រូ និងហិរញ្ញវត្ថុ <Cite :ids="[26, 30, 34]" /> ។
+      </p>
     </div>
 
     <!-- Conclusion -->
