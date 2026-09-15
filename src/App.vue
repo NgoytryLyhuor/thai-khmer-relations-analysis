@@ -9,6 +9,7 @@ import CulturePage from './pages/CulturePage.vue'
 import Conflict2025Page from './pages/Conflict2025Page.vue'
 import AnalysisPage from './pages/AnalysisPage.vue'
 import EconomyPage from './pages/EconomyPage.vue'
+import OutlookPage from './pages/OutlookPage.vue'
 import ReferencesPage from './pages/ReferencesPage.vue'
 
 const pages = {
@@ -18,6 +19,7 @@ const pages = {
   conflict2025: Conflict2025Page,
   analysis: AnalysisPage,
   economy: EconomyPage,
+  outlook: OutlookPage,
   references: ReferencesPage,
 }
 
@@ -51,8 +53,10 @@ onMounted(() => {
 <template>
   <div class="min-h-screen flex flex-col">
     <Navbar :current="currentPage" @nav="navigate" />
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-5xl">
-      <component :is="pages[currentPage]" :key="currentPage" class="fade-in" />
+    <main class="flex-grow w-full px-4 py-8 md:py-10">
+      <div class="max-w-6xl mx-auto">
+        <component :is="pages[currentPage]" :key="currentPage" class="page-enter" />
+      </div>
     </main>
     <AppFooter text="ផ្អែកលើរបាយការណ៍ស្រាវជ្រាវ ២០២៥–២០២៦ • បង្កើតឡើងដោយ លីហួរ (Lyhuor) • បង្កើតដោយ Vue.js" />
   </div>
