@@ -1,5 +1,6 @@
 <script setup>
 import { ref, provide, onMounted } from 'vue'
+import { initTheme } from './theme'
 import Navbar from './components/Navbar.vue'
 import AppFooter from './components/AppFooter.vue'
 import IntroPage from './pages/IntroPage.vue'
@@ -40,6 +41,7 @@ function navigate(pageId) {
 provide('nav', navigate)
 
 onMounted(() => {
+  initTheme()
   window.addEventListener('hashchange', () => {
     currentPage.value = parseHash()
   })

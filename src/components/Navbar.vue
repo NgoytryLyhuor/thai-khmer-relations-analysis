@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import { isDark, toggleTheme } from '../theme'
 
 defineProps({ current: String })
 const emit = defineEmits(['nav'])
@@ -48,9 +49,27 @@ function go(id) {
           >
             {{ item.label }}
           </button>
+
+          <button
+            @click="toggleTheme"
+            class="p-2 rounded-full border transition shrink-0"
+            :class="isDark ? 'bg-yellow-50 text-yellow-800 hover:bg-yellow-100' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            :aria-label="isDark ? 'ប្តូរទៅរបៀបភ្លឺ' : 'ប្តូរទៅរបៀបងងឹត'"
+            :title="isDark ? 'Light mode ☀️' : 'Dark mode 🌙'"
+          >
+            <span class="text-lg leading-none">{{ isDark ? '☀️' : '🌙' }}</span>
+          </button>
         </div>
 
-        <div class="lg:hidden flex items-center">
+        <div class="lg:hidden flex items-center gap-2">
+          <button
+            @click="toggleTheme"
+            class="p-2 rounded-full border transition shrink-0"
+            :class="isDark ? 'bg-yellow-50 text-yellow-800' : 'bg-gray-100 text-gray-700'"
+            :aria-label="isDark ? 'ប្តូរទៅរបៀបភ្លឺ' : 'ប្តូរទៅរបៀបងងឹត'"
+          >
+            <span class="text-lg leading-none">{{ isDark ? '☀️' : '🌙' }}</span>
+          </button>
           <button
             @click="mobileOpen = !mobileOpen"
             class="text-gray-600 hover:text-primary focus:outline-none p-2 border rounded"
