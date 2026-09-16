@@ -7,6 +7,7 @@ import IntroPage from './pages/IntroPage.vue'
 import HistoryPage from './pages/HistoryPage.vue'
 import CulturePage from './pages/CulturePage.vue'
 import Conflict2025Page from './pages/Conflict2025Page.vue'
+import Status2026Page from './pages/Status2026Page.vue'
 import AnalysisPage from './pages/AnalysisPage.vue'
 import EconomyPage from './pages/EconomyPage.vue'
 import OutlookPage from './pages/OutlookPage.vue'
@@ -17,6 +18,7 @@ const pages = {
   history: HistoryPage,
   culture: CulturePage,
   conflict2025: Conflict2025Page,
+  status2026: Status2026Page,
   analysis: AnalysisPage,
   economy: EconomyPage,
   outlook: OutlookPage,
@@ -58,6 +60,6 @@ onMounted(() => {
         <component :is="pages[currentPage]" :key="currentPage" class="page-enter" />
       </div>
     </main>
-    <AppFooter text="ផ្អែកលើរបាយការណ៍ស្រាវជ្រាវ ២០២៥–២០២៦ • បង្កើតឡើងដោយ លីហួរ (Lyhuor) • បង្កើតដោយ Vue.js" />
+    <AppFooter text="ផ្អែកលើរបាយការណ៍ស្រាវជ្រាវ ២០២៥–២០២៦ (បច្ចុប្បន្នភាព កញ្ញា ២០២៦) • បង្កើតឡើងដោយ លីហួរ (Lyhuor) • បង្កើតដោយ Vue.js" />
   </div>
 </template>

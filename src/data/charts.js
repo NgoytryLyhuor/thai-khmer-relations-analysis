@@ -6,25 +6,25 @@ const defaults = {
 export const mainConflictChart = {
   type: 'line',
   data: {
-    labels: ['1594 (លង្វែក)', '1907 (ផែនទី)', '1962 (ICJ)', '2008 (ព្រះវិហារ)', '2023 (ស៊ីហ្គេម)', '2025 (Scammers)'],
+    labels: ['1594 (លង្វែក)', '1907 (ផែនទី)', '1962 (ICJ)', '2008 (ព្រះវិហារ)', '2023 (ស៊ីហ្គេម)', '2025 (ព្រំដែន)', '2026 (សមុទ្រ)'],
     datasets: [
       {
         label: 'ជម្លោះនយោបាយ/ទឹកដី',
-        data: [80, 60, 70, 95, 40, 90],
+        data: [80, 60, 70, 95, 40, 90, 85],
         borderColor: '#1e3a8a',
         tension: 0.3,
         fill: false,
       },
       {
         label: 'ជម្លោះវប្បធម៌',
-        data: [20, 10, 30, 85, 95, 60],
+        data: [20, 10, 30, 85, 95, 60, 45],
         borderColor: '#d97706',
         tension: 0.3,
         fill: false,
       },
       {
         label: 'បញ្ហាថ្មី (ឧក្រិដ្ឋកម្ម/Scam)',
-        data: [0, 0, 0, 10, 30, 95],
+        data: [0, 0, 0, 10, 30, 95, 40],
         borderColor: '#dc2626',
         borderDash: [5, 5],
         tension: 0.3,

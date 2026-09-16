@@ -9,11 +9,19 @@ const nav = inject('nav')
 const cards = [
   {
     icon: '⚡',
-    title: 'ចំណុចក្តៅថ្មី (២០២៥)',
-    value: 'សង្គ្រាម Scammers',
-    desc: 'ការវាយប្រហារតាមអាកាស & ឧក្រិដ្ឋកម្មឆ្លងដែន',
+    title: 'សង្គ្រាមព្រំដែន (២០២៥)',
+    value: 'ស្លាប់ ~១៥០ នាក់',
+    desc: 'ការប៉ះទង្គិច ២ ជុំ (កក្កដា & ធ្នូ) · F-16, BM-21',
     tone: 'from-rose-500 to-red-600',
     target: 'conflict2025',
+  },
+  {
+    icon: '🌊',
+    title: 'វិបត្តិសមុទ្រ (២០២៦)',
+    value: 'UNCLOS សិង្ហបុរី',
+    desc: 'ដណ្តើមប្រេង & ហ្គាស ~៣០០ ពាន់លាន USD',
+    tone: 'from-sky-500 to-blue-600',
+    target: 'status2026',
   },
   {
     icon: '🏛️',
@@ -21,14 +29,6 @@ const cards = [
     value: 'លង្វែក ១៥៩៤',
     desc: 'រឿងព្រេង ព្រះគោព្រះកែវ & ការបាត់បង់ទឹកដី',
     tone: 'from-amber-500 to-orange-600',
-    target: 'history',
-  },
-  {
-    icon: '⚖️',
-    title: 'មូលដ្ឋានច្បាប់',
-    value: 'ផែនទី ១៩០៧',
-    desc: 'សាលក្រម ICJ ឆ្នាំ ១៩៦២ & ២០១៣',
-    tone: 'from-blue-500 to-indigo-600',
     target: 'history',
   },
   {
@@ -56,8 +56,10 @@ const cards = [
           <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-amber-300 to-yellow-200">កម្ពុជា-ថៃ</span>
         </h1>
         <p class="text-white/80 text-base md:text-lg leading-relaxed">
-          ការវិភាគស៊ីជម្រៅលើ "ការចងចាំរួម" (Collective Memory), របួសប្រវត្តិសាស្ត្រ, ជម្លោះ "សង្គ្រាម Scammers ២០២៥",
-          និងផលប៉ះពាល់ដល់<strong class="text-white">សេដ្ឋកិច្ច និងជីវិតប្រចាំថ្ងៃ</strong>របស់ប្រជាជន ។
+          ការវិភាគស៊ីជម្រៅលើ "ការចងចាំរួម" (Collective Memory), របួសប្រវត្តិសាស្ត្រ,
+          សង្គ្រាមព្រំដែន ២០២៥ ដែលបានបញ្ឈប់ដោយបទឈប់បាញ់ និង<strong class="text-white">វិបត្តិសមុទ្រថ្មី ២០២៦</strong>
+          ដែលកំពុងត្រូវបានលើកយកទៅដោះស្រាយតាមយន្តការ UNCLOS នៅសិង្ហបុរី —
+          ព្រមទាំងផលប៉ះពាល់ដល់<strong class="text-white">សេដ្ឋកិច្ច និងជីវិតប្រចាំថ្ងៃ</strong>របស់ប្រជាជន ។
         </p>
         <div class="flex flex-wrap justify-center gap-3 mt-7">
           <button @click="nav('history')" class="btn btn-primary !px-8">ចាប់ផ្តើមអានរបាយការណ៍</button>
@@ -89,15 +91,16 @@ const cards = [
       <div class="chart-card-header">
         <div>
           <h2 class="section-title !text-xl md:!text-2xl">កត្តាជំរុញជម្លោះតាមសម័យកាល</h2>
-          <p class="text-sm mt-1" :class="isDark ? 'text-gray-400' : 'text-gray-500'">ពីជម្លោះទឹកដី → ជម្លោះកូនកាត់ (Hybrid Conflict)</p>
+          <p class="text-sm mt-1" :class="isDark ? 'text-gray-400' : 'text-gray-500'">ពីជម្លោះទឹកដី → ជម្លោះកូនកាត់ (Hybrid Conflict) → ជម្លោះសមុទ្រ ២០២៦</p>
         </div>
-        <span class="chip hidden md:inline-flex">ប្រវត្តិ → ២០២៥</span>
+        <span class="chip hidden md:inline-flex">ប្រវត្តិ → ២០២៦</span>
       </div>
       <div class="chart-wrapper">
         <ChartJs id="main" :config="mainConflictChart" />
       </div>
       <p class="text-center text-sm mt-4 italic" :class="isDark ? 'text-gray-400' : 'text-gray-500'">
-        ទិន្នន័យបង្ហាញពីការផ្លាស់ប្តូរពីជម្លោះទឹកដី មកជាជម្លោះកូនកាត់ (Hybrid Conflict) នៅឆ្នាំ ២០២៥ ។
+        ទិន្នន័យបង្ហាញពីការផ្លាស់ប្តូរពីជម្លោះទឹកដី មកជាជម្លោះកូនកាត់ (Hybrid Conflict) នៅឆ្នាំ ២០២៥
+        ហើយឥឡូវទៅជាជម្លោះសមុទ្រនៅឈូងសមុទ្រថៃក្នុងឆ្នាំ ២០២៦ ។
       </p>
     </div>
 

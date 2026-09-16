@@ -10,6 +10,7 @@ const items = [
   { id: 'history', label: 'ប្រវត្តិសាស្ត្រ' },
   { id: 'culture', label: 'វប្បធម៌' },
   { id: 'conflict2025', label: 'ជម្លោះ ២០២៥', special: true },
+  { id: 'status2026', label: 'ស្ថានភាព ២០២៦', special: true },
   { id: 'analysis', label: 'វិភាគ' },
   { id: 'economy', label: 'សេដ្ឋកិច្ច' },
   { id: 'outlook', label: 'ទស្សនវិស័យ ២០២៧–២០២៩', special: true },
